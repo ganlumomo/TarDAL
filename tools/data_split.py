@@ -50,8 +50,8 @@ def generate_meta(root):
     t_frame.sort()
     v_frame.sort()
     # write to file
-    (root / 'meta' / 'train.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}.png\n' for x in t_frame]))
-    (root / 'meta' / 'val.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}.png\n' for x in v_frame]))
+    (root / 'meta' / 'train.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in t_frame]))
+    (root / 'meta' / 'val.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in v_frame]))
     # count frame
     for scenario in scenarios:
         print(scenario['name'])
@@ -74,8 +74,8 @@ def generate_meta(root):
         # write to file
         tt_txt = scenario['name'] + '_train.txt'
         vv_txt = scenario['name'] + '_val.txt'
-        (root / 'meta' / tt_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}.png\n' for x in tt_frame]))
-        (root / 'meta' / vv_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}.png\n' for x in vv_frame]))
+        (root / 'meta' / tt_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in tt_frame]))
+        (root / 'meta' / vv_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in vv_frame]))
     # total frame
     logging.info(f'total train frame: {len(t_frame)}, total val frame: {len(v_frame)}')
 
