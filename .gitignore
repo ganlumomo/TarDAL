@@ -11,7 +11,7 @@ runs/*
 **/__pycache__
 
 # experimental data
-data/*
+#data/*
 !data/README.md
 
 # weights (update by release)
