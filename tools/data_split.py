@@ -2,6 +2,7 @@ import json
 import logging
 from functools import reduce
 from pathlib import Path
+import numpy as np
 
 
 def scenario_counter(src):
@@ -35,27 +36,33 @@ def scenario_counter(src):
 def generate_meta(root):
     root = Path(root)
     # read scenario from json file
-    t_frame, v_frame = [], []
+    train_frame, val_frame, test_frame = [], [], []
     scenarios = json.load((root / 'meta' / 'scenario.json').open('r'))
     trains = json.load((root / 'meta' / 'instances_train2014.json').open('r'))
-    vals = json.load((root / 'meta' / 'instances_val2014.json').open('r'))
+    tests = json.load((root / 'meta' / 'instances_val2014.json').open('r'))
     # count train val
     for train in trains['images']:
         frame = int(train['file_name'][:-4])
-        t_frame.append(frame)
-    for val in vals['images']:
-        frame = int(val['file_name'][:-4])
-        v_frame.append(frame)
+        if np.random.uniform(0.0, 1.0) < 0.8:
+            train_frame.append(frame)
+        else:
+            val_frame.append(frame)
+    for test in tests['images']:
+        frame = int(test['file_name'][:-4])
+        test_frame.append(frame)
     # sort by index
-    t_frame.sort()
-    v_frame.sort()
+    train_frame.sort()
+    val_frame.sort()
+    test_frame.sort()
     # write to file
-    (root / 'meta' / 'train.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in t_frame]))
-    (root / 'meta' / 'val.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in v_frame]))
+    (root / 'meta' / 'train.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in train_frame]))
+    (root / 'meta' / 'val.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in val_frame]))
+    (root / 'meta' / 'test.txt').write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in test_frame]))
+
     # count frame
     for scenario in scenarios:
         print(scenario['name'])
-        tt_frame, vv_frame = [], []
+        sub_train_frame, sub_val_frame, sub_test_frame = [], [], []
         for scene in scenario['scene']:
             for fr in scene['range']:
                 frames = list(range(fr['min'], fr['max'] + 1))
@@ -64,20 +71,25 @@ def generate_meta(root):
                 # else:
                 #     v_frame += frame
                 for frame in frames:
-                    if frame in t_frame:
-                        tt_frame.append(frame)
-                    else:
-                        vv_frame.append(frame)
+                    if frame in train_frame:
+                        sub_train_frame.append(frame)
+                    elif frame in val_frame:
+                        sub_val_frame.append(frame)
+                    elif frame in test_frame:
+                        sub_test_frame.append(frame)
         # sort by index
-        tt_frame.sort()
-        vv_frame.sort()                
+        sub_train_frame.sort()
+        sub_val_frame.sort()
+        sub_test_frame.sort()
         # write to file
-        tt_txt = scenario['name'] + '_train.txt'
-        vv_txt = scenario['name'] + '_val.txt'
-        (root / 'meta' / tt_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in tt_frame]))
-        (root / 'meta' / vv_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in vv_frame]))
+        train_txt = scenario['name'] + '_train.txt'
+        val_txt = scenario['name'] + '_val.txt'
+        test_txt = scenario['name'] + '_test.txt'
+        (root / 'meta' / train_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in sub_train_frame]))
+        (root / 'meta' / val_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in sub_val_frame]))
+        (root / 'meta' / test_txt).write_text(reduce(lambda i, j: i + j, [f'{str(x).zfill(5)}\n' for x in sub_test_frame]))
     # total frame
-    logging.info(f'total train frame: {len(t_frame)}, total val frame: {len(v_frame)}')
+    logging.info(f'total train frame: {len(train_frame)}, total val frame: {len(val_frame)}, total test frame: {len(test_frame)}')
 
 
 if __name__ == '__main__':
