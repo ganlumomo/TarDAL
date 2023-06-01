@@ -64,4 +64,4 @@ def categories_counter(trains, vals, tests):
 
 if __name__ == '__main__':
     # scenario_counter('/home/carson/data/m3fd/meta/scenario.json')
-    read_split('/home/carson/data/m3fd/meta')
+    read_split('/home/carson/data/m3fd/meta/6040_split/')

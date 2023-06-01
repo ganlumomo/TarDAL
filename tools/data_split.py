@@ -43,7 +43,7 @@ def generate_meta(root):
     # count train val
     for train in trains['images']:
         frame = int(train['file_name'][:-4])
-        if np.random.uniform(0.0, 1.0) < 0.8:
+        if np.random.uniform(0.0, 1.0) < 0.6:
             train_frame.append(frame)
         else:
             val_frame.append(frame)
